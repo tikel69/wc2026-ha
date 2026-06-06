@@ -290,15 +290,33 @@ def _compute_favorite_team(
 
     team_scorers = [s for s in scorers if s["team"] == team_name]
 
+    scorer_stats: dict[str, dict] = {
+        s["name"]: {"goals": s["goals"], "assists": s.get("assists") or 0, "penalties": s.get("penalties") or 0}
+        for s in scorers
+    }
+
+    today = datetime.now(timezone.utc).date()
     raw_squad = squad_data.get("squad", [])
     squad_by_pos: dict[str, list] = {"GK": [], "DEF": [], "MID": [], "FWD": []}
     pos_map = {"Goalkeeper": "GK", "Defence": "DEF", "Midfield": "MID", "Offence": "FWD"}
     for p in raw_squad:
         key = pos_map.get(p.get("position", ""), "FWD")
+        dob_str = p.get("dateOfBirth", "")
+        age = None
+        if dob_str:
+            try:
+                dob = datetime.strptime(dob_str, "%Y-%m-%d").date()
+                age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+            except ValueError:
+                pass
+        stats = scorer_stats.get(p.get("name", ""), {})
         squad_by_pos[key].append({
             "name": p.get("name", ""),
-            "dateOfBirth": p.get("dateOfBirth", ""),
+            "age": age,
             "nationality": p.get("nationality", ""),
+            "goals": stats.get("goals", 0),
+            "assists": stats.get("assists", 0),
+            "penalties": stats.get("penalties", 0),
         })
 
     team_finished = [m for m in team_matches if m["status"] == "FINISHED"]

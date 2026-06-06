@@ -255,19 +255,34 @@ def _card_team_squad() -> dict:
         "{% set sq = state_attr('" + e + "', 'squad') %}",
         "{% if not sq %}*Squad data not available.*{% else %}",
         "**🧤 Goalkeepers**",
-        "{% for p in sq.GK %}• {{ p.name }} *({{ p.nationality }})*",
+        "{% for p in sq.GK %}"
+        "• **{{ p.name }}** ({{ p.age }}, {{ p.nationality }})"
+        "{% if p.goals > 0 %} ⚽{{ p.goals }}{% endif %}"
+        "{% if p.assists > 0 %} 🅰{{ p.assists }}{% endif %}",
         "{% endfor %}",
         "",
         "**🛡 Defenders**",
-        "{% for p in sq.DEF %}• {{ p.name }} *({{ p.nationality }})*",
+        "{% for p in sq.DEF %}"
+        "• **{{ p.name }}** ({{ p.age }}, {{ p.nationality }})"
+        "{% if p.goals > 0 %} ⚽{{ p.goals }}{% endif %}"
+        "{% if p.assists > 0 %} 🅰{{ p.assists }}{% endif %}"
+        "{% if p.penalties > 0 %} 🅿{{ p.penalties }}{% endif %}",
         "{% endfor %}",
         "",
         "**⚙ Midfielders**",
-        "{% for p in sq.MID %}• {{ p.name }} *({{ p.nationality }})*",
+        "{% for p in sq.MID %}"
+        "• **{{ p.name }}** ({{ p.age }}, {{ p.nationality }})"
+        "{% if p.goals > 0 %} ⚽{{ p.goals }}{% endif %}"
+        "{% if p.assists > 0 %} 🅰{{ p.assists }}{% endif %}"
+        "{% if p.penalties > 0 %} 🅿{{ p.penalties }}{% endif %}",
         "{% endfor %}",
         "",
         "**⚡ Forwards**",
-        "{% for p in sq.FWD %}• {{ p.name }} *({{ p.nationality }})*",
+        "{% for p in sq.FWD %}"
+        "• **{{ p.name }}** ({{ p.age }}, {{ p.nationality }})"
+        "{% if p.goals > 0 %} ⚽{{ p.goals }}{% endif %}"
+        "{% if p.assists > 0 %} 🅰{{ p.assists }}{% endif %}"
+        "{% if p.penalties > 0 %} 🅿{{ p.penalties }}{% endif %}",
         "{% endfor %}",
         "{% set coach = state_attr('" + e + "', 'coach') %}",
         "{% if coach %}",
