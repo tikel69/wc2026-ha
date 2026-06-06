@@ -1,41 +1,114 @@
-# World Cup 2026 for Home Assistant
+# ⚽ World Cup 2026 for Home Assistant
 
-Custom integration for tracking the 2026 FIFA World Cup using the [football-data.org](https://football-data.org) API.
+Track the entire 2026 FIFA World Cup — live scores, group tables, knockout bracket, top scorers and tournament statistics — directly in Home Assistant.
+
+Data is provided by [football-data.org](https://football-data.org) (free API key required).
+
+---
 
 ## Features
 
-- **Group Stage Tables** – live standings calculated from match results for all 12 groups (A–L)
-- **All 104 Fixtures** – complete schedule with live score updates
-- **Knockout Stage** – Round of 32, Round of 16, Quarter-finals, Semi-finals, Third Place, Final
-- **Top Scorers** – live golden boot race
-- **Tournament Statistics** – goals, matches played, goals per match, current stage
-- **Live updates** – switches to 60-second polling during live matches
+| | |
+|---|---|
+| ⚽ **Live scores** | Real-time score + minute during active matches |
+| 📊 **Group tables** | Standings for all 12 groups (A–L), calculated from match results |
+| 📅 **All 104 fixtures** | Full tournament schedule with status and scores |
+| 🏆 **Knockout stage** | Round of 32 → Round of 16 → QF → SF → Final |
+| 🥅 **Top scorers** | Golden boot race with goals and penalties |
+| 📈 **Tournament stats** | Goals, matches played, goals/match, current stage |
+| 🗂 **Auto dashboard** | Full Lovelace dashboard created automatically on install |
+| 🔄 **Smart polling** | 5-minute updates normally; switches to 60 seconds during live matches |
 
-## Installation via HACS
+---
 
-1. HACS → Integrations → ⋮ → Custom repositories
-2. Add `https://github.com/tikel69/wc2026-ha` → Integration
-3. Install **World Cup 2026**
-4. Restart Home Assistant
+## Installation
+
+### Prerequisites
+
+Get a free API key at [football-data.org/client/register](https://www.football-data.org/client/register). The free tier covers the World Cup.
+
+### Via HACS (recommended)
+
+1. Open **HACS → Integrations**
+2. Click ⋮ → **Custom repositories**
+3. Add `https://github.com/tikel69/wc2026-ha` — category **Integration**
+4. Search for **World Cup 2026** and install
+5. Restart Home Assistant
+
+### Manual
+
+Copy the `custom_components/wc2026` folder into your HA `config/custom_components/` directory and restart.
+
+---
 
 ## Configuration
 
-Settings → Devices & Services → Add Integration → search **World Cup 2026**
+1. Go to **Settings → Devices & Services → Add Integration**
+2. Search for **World Cup 2026**
+3. Enter your football-data.org API key
 
-Enter your free API key from [football-data.org](https://www.football-data.org/client/register).
+After setup and browser refresh, the **World Cup 2026** dashboard appears automatically in the sidebar — no manual configuration needed.
 
-The **World Cup 2026** dashboard is created automatically in your sidebar after the first HA restart post-install. No manual setup needed.
+---
+
+## Dashboard
+
+The dashboard is provisioned automatically with 4 views:
+
+| View | Content |
+|------|---------|
+| **Pregled** | Next match / live scores, today's schedule, tournament stats, latest result |
+| **Grupna faza** | All 12 group standings tables (4 per row) with fixtures and results per group |
+| **Raspored** | Next 10 upcoming fixtures + last 10 results |
+| **Playoff** | Full knockout bracket (R32 → R16 → QF → SF → Final) + top scorers |
+
+---
 
 ## Sensors
 
-| Sensor | Description |
-|--------|-------------|
-| `sensor.wc2026_next_match` | Next scheduled match |
-| `sensor.wc2026_live_matches` | Count of live matches + details |
-| `sensor.wc2026_today_matches` | Today's matches |
-| `sensor.wc2026_all_fixtures` | All 104 fixtures (split: upcoming 10 + last 10 results) |
-| `sensor.wc2026_knockout_stage` | All knockout stage matches |
-| `sensor.wc2026_latest_result` | Most recent finished match |
-| `sensor.wc2026_tournament_stats` | Goals, played, stage, goals/match |
-| `sensor.wc2026_top_scorers` | Golden boot leader + full scorers list |
-| `sensor.wc2026_group_a` … `sensor.wc2026_group_l` | Per-group standings table + fixtures |
+Entity IDs use the prefix `sensor.world_cup_2026_` (device name + sensor name).
+
+### Core
+
+| Entity | State | Description |
+|--------|-------|-------------|
+| `sensor.world_cup_2026_next_match` | `Home v Away` | Next scheduled match |
+| `sensor.world_cup_2026_live_matches` | count | Live matches with scores + minute |
+| `sensor.world_cup_2026_today_matches` | count | Today's matches |
+| `sensor.world_cup_2026_latest_result` | `Home X–Y Away` | Most recent result |
+| `sensor.world_cup_2026_all_fixtures` | `104` | Upcoming 10 + last 10 results in attributes |
+| `sensor.world_cup_2026_knockout_stage` | stage name | All knockout matches by round |
+| `sensor.world_cup_2026_tournament_stats` | stage name | Goals, played, remaining, goals/match |
+| `sensor.world_cup_2026_top_scorers` | top scorer name | Full scorers list in attributes |
+
+### Group stage (× 12)
+
+`sensor.world_cup_2026_group_a` … `sensor.world_cup_2026_group_l`
+
+**State:** current group leader  
+**Attributes:**
+- `table` — list of 4 teams with position, points, played, won, draw, lost, GF, GA, GD
+- `matches` — all 6 group matches with status and scores
+
+---
+
+## Notes
+
+- Group standings are calculated directly from match results (the football-data.org standings endpoint does not break down World Cup standings by group pre-tournament).
+- The `all_fixtures` sensor stores the next 10 upcoming and last 10 completed matches in attributes to stay within HA state size limits. Per-group fixtures are fully available via the group sensors.
+- The dashboard is only provisioned once. If you delete it and want it back, remove and re-add the integration, or create it manually.
+
+---
+
+## Uninstalling
+
+1. **Settings → Devices & Services** → World Cup 2026 → Delete
+2. **HACS → Integrations** → World Cup 2026 → Remove
+3. Restart Home Assistant
+4. Delete the `World Cup 2026` dashboard from **Settings → Dashboards** if desired
+
+---
+
+## License
+
+MIT — not affiliated with FIFA or football-data.org.
