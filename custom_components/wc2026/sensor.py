@@ -31,6 +31,8 @@ async def async_setup_entry(
     for g in GROUPS:
         entities.append(WC2026GroupSensor(coordinator, g))
 
+    entities.append(WC2026FavoriteTeamSensor(coordinator))
+
     async_add_entities(entities)
 
 
@@ -235,6 +237,30 @@ class WC2026LatestResultSensor(WC2026BaseSensor):
             return {}
         m = self.coordinator.data.get("latest_result")
         return m or {}
+
+
+class WC2026FavoriteTeamSensor(WC2026BaseSensor):
+    _attr_name = "Favorite Team"
+    _attr_icon = "mdi:star"
+
+    def __init__(self, coordinator: WC2026Coordinator) -> None:
+        super().__init__(coordinator, "favorite_team")
+
+    @property
+    def native_value(self):
+        if not self.coordinator.data:
+            return "Not configured"
+        ft = self.coordinator.data.get("favorite_team")
+        if not ft:
+            return "Not configured"
+        return ft["team_name"]
+
+    @property
+    def extra_state_attributes(self):
+        if not self.coordinator.data:
+            return {}
+        ft = self.coordinator.data.get("favorite_team")
+        return ft or {}
 
 
 class WC2026GroupSensor(WC2026BaseSensor):

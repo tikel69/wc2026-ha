@@ -123,6 +123,8 @@ def _slim_match(m: dict) -> dict:
         "away": m["awayTeam"]["name"],
         "homeTla": m["homeTeam"]["tla"],
         "awayTla": m["awayTeam"]["tla"],
+        "homeId": m["homeTeam"].get("id"),
+        "awayId": m["awayTeam"].get("id"),
         "homeScore": ft.get("home"),
         "awayScore": ft.get("away"),
         "htHome": ht.get("home"),
@@ -134,8 +136,9 @@ def _slim_match(m: dict) -> dict:
 
 
 class WC2026Coordinator(DataUpdateCoordinator):
-    def __init__(self, hass: HomeAssistant, api_key: str) -> None:
+    def __init__(self, hass: HomeAssistant, api_key: str, team_id: int | None = None) -> None:
         self.api_key = api_key
+        self.team_id = team_id
         self._live_mode = False
         super().__init__(
             hass,
@@ -145,7 +148,7 @@ class WC2026Coordinator(DataUpdateCoordinator):
         )
 
     async def _async_update_data(self) -> dict:
-        matches_raw, scorers_raw = await self.hass.async_add_executor_job(
+        matches_raw, scorers_raw, squad_data = await self.hass.async_add_executor_job(
             self._fetch_all
         )
 
@@ -214,6 +217,10 @@ class WC2026Coordinator(DataUpdateCoordinator):
             for s in scorers_raw
         ]
 
+        favorite_team = _compute_favorite_team(
+            self.team_id, squad_data, matches, scorers, group_data
+        )
+
         return {
             "matches": matches,
             "live": live,
@@ -225,6 +232,7 @@ class WC2026Coordinator(DataUpdateCoordinator):
             "groups": group_data,
             "knockout": knockout,
             "scorers": scorers,
+            "favorite_team": favorite_team,
             "stats": {
                 "total_goals": total_goals,
                 "total_played": total_played,
@@ -235,11 +243,99 @@ class WC2026Coordinator(DataUpdateCoordinator):
             },
         }
 
-    def _fetch_all(self) -> tuple[list, list]:
+    def _fetch_all(self) -> tuple[list, list, dict | None]:
         matches_url = f"{API_BASE}/competitions/{COMPETITION_CODE}/matches?season={SEASON}"
         scorers_url = f"{API_BASE}/competitions/{COMPETITION_CODE}/scorers?season={SEASON}&limit=20"
 
         matches_data = _api_get(matches_url, self.api_key)
         scorers_data = _api_get(scorers_url, self.api_key)
 
-        return matches_data.get("matches", []), scorers_data.get("scorers", [])
+        squad_data = None
+        if self.team_id:
+            try:
+                squad_data = _api_get(f"{API_BASE}/teams/{self.team_id}", self.api_key)
+            except Exception as e:
+                _LOGGER.warning("Could not fetch squad for team %s: %s", self.team_id, e)
+
+        return matches_data.get("matches", []), scorers_data.get("scorers", []), squad_data
+
+
+def _compute_favorite_team(
+    team_id: int | None,
+    squad_data: dict | None,
+    matches: list[dict],
+    scorers: list[dict],
+    group_data: dict,
+) -> dict | None:
+    if not team_id or not squad_data:
+        return None
+
+    team_name = squad_data.get("name", "")
+
+    team_matches = [
+        m for m in matches
+        if m.get("homeId") == team_id or m.get("awayId") == team_id
+    ]
+
+    team_group: str | None = None
+    team_standing: dict | None = None
+    for g, data in group_data.items():
+        for row in data["table"]:
+            if row["team"] == team_name:
+                team_group = g
+                team_standing = row
+                break
+        if team_group:
+            break
+
+    team_scorers = [s for s in scorers if s["team"] == team_name]
+
+    raw_squad = squad_data.get("squad", [])
+    squad_by_pos: dict[str, list] = {"GK": [], "DEF": [], "MID": [], "FWD": []}
+    pos_map = {"Goalkeeper": "GK", "Defence": "DEF", "Midfield": "MID", "Offence": "FWD"}
+    for p in raw_squad:
+        key = pos_map.get(p.get("position", ""), "FWD")
+        squad_by_pos[key].append({
+            "name": p.get("name", ""),
+            "dateOfBirth": p.get("dateOfBirth", ""),
+            "nationality": p.get("nationality", ""),
+        })
+
+    team_finished = [m for m in team_matches if m["status"] == "FINISHED"]
+    gf = 0
+    ga = 0
+    wins = 0
+    draws = 0
+    for m in team_finished:
+        if m["homeScore"] is None:
+            continue
+        is_home = m.get("homeId") == team_id
+        tg = m["homeScore"] if is_home else m["awayScore"]
+        ag_ = m["awayScore"] if is_home else m["homeScore"]
+        gf += tg
+        ga += ag_
+        if tg > ag_:
+            wins += 1
+        elif tg == ag_:
+            draws += 1
+    losses = len(team_finished) - wins - draws
+
+    return {
+        "team_id": team_id,
+        "team_name": team_name,
+        "group": team_group,
+        "group_standing": team_standing,
+        "matches": team_matches,
+        "scorers": team_scorers,
+        "squad": squad_by_pos,
+        "coach": squad_data.get("coach"),
+        "stats": {
+            "played": len(team_finished),
+            "won": wins,
+            "draw": draws,
+            "lost": losses,
+            "gf": gf,
+            "ga": ga,
+            "gd": gf - ga,
+        },
+    }

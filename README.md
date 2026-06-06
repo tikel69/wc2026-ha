@@ -18,6 +18,7 @@ Data is provided by [football-data.org](https://football-data.org) (free API key
 | 🏆 **Knockout stage** | Round of 32 → Round of 16 → QF → SF → Final |
 | 🥅 **Top scorers** | Golden boot race with goals and penalties |
 | 📈 **Tournament stats** | Goals, matches played, goals/match, current stage |
+| ⭐ **Favorite team** | Dedicated view with squad, match history and scorers for your team |
 | 🗂 **Auto dashboard** | Full Lovelace dashboard created automatically on install |
 | 🔄 **Smart polling** | 5-minute updates normally; switches to 60 seconds during live matches |
 
@@ -57,6 +58,16 @@ Copy the `custom_components/wc2026` folder into your HA `config/custom_component
 
 After setup and browser refresh, the **World Cup 2026** dashboard appears automatically in the sidebar — no manual configuration needed.
 
+### Favorite team (optional)
+
+To enable the personal team view:
+
+1. **Settings → Devices & Services → World Cup 2026 → Configure**
+2. Select your team from the dropdown (48 teams available)
+3. Click Submit — the integration will fetch the squad and filter match data automatically
+
+The **Moj tim** (My Team) dashboard view shows group standing, all team matches, full squad by position, and tournament scorers for your team. If no team is selected the view displays a configuration prompt.
+
 ---
 
 ## Dashboard
@@ -65,10 +76,11 @@ The dashboard is provisioned automatically with 4 views:
 
 | View | Content |
 |------|---------|
-| **Pregled** | Next match / live scores, today's schedule, tournament stats, latest result |
-| **Grupna faza** | All 12 group standings tables (4 per row) with fixtures and results per group |
-| **Raspored** | Next 10 upcoming fixtures + last 10 results |
+| **Overview** | Next match / live scores, today's schedule, tournament stats, latest result |
+| **Group Stage** | All 12 group standings tables (4 per row) with fixtures and results per group |
+| **Schedule** | Next 10 upcoming fixtures + last 10 results |
 | **Playoff** | Full knockout bracket (R32 → R16 → QF → SF → Final) + top scorers |
+| **My Team** | Favorite team: group standing, all matches, full squad by position, team scorers |
 
 ---
 
@@ -88,6 +100,7 @@ Entity IDs use the prefix `sensor.world_cup_2026_` (device name + sensor name).
 | `sensor.world_cup_2026_knockout_stage` | stage name | All knockout matches by round |
 | `sensor.world_cup_2026_tournament_stats` | stage name | Goals, played, remaining, goals/match |
 | `sensor.world_cup_2026_top_scorers` | top scorer name | Full scorers list in attributes |
+| `sensor.world_cup_2026_favorite_team` | team name or `Not configured` | Squad, matches, scorers, group standing in attributes |
 
 ### Group stage (× 12)
 
