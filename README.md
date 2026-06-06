@@ -24,6 +24,8 @@ Settings → Devices & Services → Add Integration → search **World Cup 2026*
 
 Enter your free API key from [football-data.org](https://www.football-data.org/client/register).
 
+The **World Cup 2026** dashboard is created automatically in your sidebar after the first HA restart post-install. No manual setup needed.
+
 ## Sensors
 
 | Sensor | Description |
