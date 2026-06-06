@@ -4,6 +4,8 @@ Track the entire 2026 FIFA World Cup — live scores, group tables, knockout bra
 
 Data is provided by [football-data.org](https://football-data.org) (free API key required).
 
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=tikel69&repository=wc2026-ha&category=integration)
+
 ---
 
 ## Features
@@ -28,6 +30,12 @@ Data is provided by [football-data.org](https://football-data.org) (free API key
 Get a free API key at [football-data.org/client/register](https://www.football-data.org/client/register). The free tier covers the World Cup.
 
 ### Via HACS (recommended)
+
+Click the button below to open HACS and add the repository in one step:
+
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=tikel69&repository=wc2026-ha&category=integration)
+
+Or manually:
 
 1. Open **HACS → Integrations**
 2. Click ⋮ → **Custom repositories**
