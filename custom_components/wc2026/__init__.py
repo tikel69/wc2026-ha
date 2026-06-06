@@ -25,7 +25,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
-    async def _options_updated(_entry: ConfigEntry) -> None:
+    async def _options_updated(_hass: HomeAssistant, _entry: ConfigEntry) -> None:
         coordinator.team_id = _entry.options.get(CONF_FAVORITE_TEAM_ID)
         await coordinator.async_refresh()
 

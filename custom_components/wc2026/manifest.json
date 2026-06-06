@@ -1,7 +1,7 @@
 {
   "domain": "wc2026",
   "name": "World Cup 2026",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "config_flow": true,
   "documentation": "https://github.com/tikel69/wc2026-ha",
   "issue_tracker": "https://github.com/tikel69/wc2026-ha/issues",
