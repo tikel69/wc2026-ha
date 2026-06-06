@@ -50,6 +50,13 @@ def _group_card(g: str) -> dict:
     )
 
 
+def _card_attribution() -> dict:
+    return _md(
+        "*Football data provided by [football-data.org](https://www.football-data.org) — "
+        "not affiliated with any football governing body.*"
+    )
+
+
 def _card_next_match() -> dict:
     return _md(
         "{% set live = state_attr('sensor.world_cup_2026_live_matches', 'matches') or [] %}",
@@ -360,6 +367,7 @@ def build_dashboard_config() -> dict:
                         _card_stats(),
                         _heading("✅ Latest Result"),
                         _card_latest(),
+                        _card_attribution(),
                     ),
                 ],
             },

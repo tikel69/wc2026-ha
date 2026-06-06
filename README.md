@@ -1,8 +1,8 @@
 # ⚽ World Cup 2026 for Home Assistant
 
-Track the entire 2026 FIFA World Cup — live scores, group tables, knockout bracket, top scorers and tournament statistics — directly in Home Assistant.
+Track the entire 2026 World Cup — live scores, group tables, knockout bracket, top scorers and tournament statistics — directly in Home Assistant.
 
-Data is provided by [football-data.org](https://football-data.org) (free API key required).
+Football data provided by [football-data.org](https://football-data.org) (free API key required).
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=tikel69&repository=wc2026-ha&category=integration)
 
@@ -66,13 +66,13 @@ To enable the personal team view:
 2. Select your team from the dropdown (48 teams available)
 3. Click Submit — the integration will fetch the squad and filter match data automatically
 
-The **Moj tim** (My Team) dashboard view shows group standing, all team matches, full squad by position, and tournament scorers for your team. If no team is selected the view displays a configuration prompt.
+The **My Team** dashboard view shows group standing, all team matches, full squad by position (with goals/assists for tournament scorers), and team scorers. If no team is selected the view displays a configuration prompt.
 
 ---
 
 ## Dashboard
 
-The dashboard is provisioned automatically with 4 views:
+The dashboard is provisioned automatically with 5 views:
 
 | View | Content |
 |------|---------|
@@ -115,8 +115,9 @@ Entity IDs use the prefix `sensor.world_cup_2026_` (device name + sensor name).
 
 ## Notes
 
-- Group standings are calculated directly from match results (the football-data.org standings endpoint does not break down World Cup standings by group pre-tournament).
+- Group standings are calculated directly from match results (the football-data.org standings endpoint does not break down World Cup standings by group).
 - The `all_fixtures` sensor stores the next 10 upcoming and last 10 completed matches in attributes to stay within HA state size limits. Per-group fixtures are fully available via the group sensors.
+- Squad goals/assists are available only for players appearing in the top 20 scorers list (free API tier limitation).
 - The dashboard is only provisioned once. If you delete it and want it back, remove and re-add the integration, or create it manually.
 
 ---
@@ -132,4 +133,5 @@ Entity IDs use the prefix `sensor.world_cup_2026_` (device name + sensor name).
 
 ## License
 
-MIT — not affiliated with FIFA or football-data.org.
+MIT — not affiliated with football-data.org or any football governing body.  
+Football data provided by [football-data.org](https://www.football-data.org).

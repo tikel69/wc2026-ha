@@ -48,7 +48,7 @@ class WC2026BaseSensor(CoordinatorEntity, SensorEntity):
             "identifiers": {(DOMAIN, "wc2026")},
             "name": "World Cup 2026",
             "manufacturer": "football-data.org",
-            "model": "FIFA World Cup 2026",
+            "model": "World Cup 2026",
         }
 
 
