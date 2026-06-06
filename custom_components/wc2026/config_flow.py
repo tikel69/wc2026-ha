@@ -69,13 +69,10 @@ class WC2026ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry: config_entries.ConfigEntry):
-        return WC2026OptionsFlow(config_entry)
+        return WC2026OptionsFlow()
 
 
 class WC2026OptionsFlow(config_entries.OptionsFlow):
-    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
-        self._config_entry = config_entry
-
     async def async_step_init(self, user_input=None) -> FlowResult:
         if user_input is not None:
             raw = user_input.get(CONF_FAVORITE_TEAM_ID, "0")
@@ -89,7 +86,7 @@ class WC2026OptionsFlow(config_entries.OptionsFlow):
                 },
             )
 
-        current_id = self._config_entry.options.get(CONF_FAVORITE_TEAM_ID)
+        current_id = self.config_entry.options.get(CONF_FAVORITE_TEAM_ID)
         default_val = str(current_id) if current_id else "0"
 
         return self.async_show_form(
